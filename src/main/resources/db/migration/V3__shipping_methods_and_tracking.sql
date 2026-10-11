@@ -1,0 +1,10 @@
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS shipping_method varchar(40) NOT NULL DEFAULT 'COLISSIMO_DOMICILE';
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS shipping_method_label varchar(160) NOT NULL DEFAULT 'Colissimo à domicile avec suivi';
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS relay_id varchar(160);
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS relay_name varchar(255);
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS relay_address varchar(255);
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS relay_postal_code varchar(30);
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS relay_city varchar(120);
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS tracking_url varchar(1000);
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS shipped_at timestamp with time zone;
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS shipping_notification_sent boolean NOT NULL DEFAULT false;

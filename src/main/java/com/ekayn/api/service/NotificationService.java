@@ -1,0 +1,9 @@
+package com.ekayn.api.service;
+import com.ekayn.api.model.Order; import com.ekayn.api.model.User; import lombok.RequiredArgsConstructor; import org.springframework.beans.factory.annotation.Value; import org.springframework.mail.SimpleMailMessage; import org.springframework.mail.javamail.JavaMailSender; import org.springframework.stereotype.Service;
+@Service @RequiredArgsConstructor public class NotificationService { private final JavaMailSender mail; @Value("${app.mail-from}") String from; @Value("${app.frontend-url}") String frontend;
+ public void verification(User u,String token){send(u.getEmail(),"Vérifiez votre adresse email Ekayn","Bonjour "+u.getFirstName()+",\n\nVérifiez votre adresse : "+frontend+"/verification-email/?token="+token);}
+ public void orderPaid(Order o){send(o.getUser().getEmail(),"Confirmation de votre commande Ekayn","Votre commande "+o.getId()+" est confirmée. Montant : "+o.getTotal()+" "+o.getCurrency()+".");}
+ public void passwordReset(User u,String token){send(u.getEmail(),"Réinitialiser votre mot de passe Ekayn","Réinitialisez votre mot de passe : "+frontend+"/reinitialiser-mot-de-passe?email="+java.net.URLEncoder.encode(u.getEmail(),java.nio.charset.StandardCharsets.UTF_8)+"&token="+token);}
+ public void shipped(Order o){String carrier=o.getCarrier()==null?"":o.getCarrier();String tracking=o.getTrackingNumber()==null?"":o.getTrackingNumber();String url=o.getTrackingUrl()==null?"":o.getTrackingUrl();send(o.getUser().getEmail(),"Votre commande Ekayn est expédiée","Votre commande "+o.getId()+" est expédiée.\n\nTransporteur : "+carrier+"\nNuméro de suivi : "+tracking+(url.isBlank()?"":"\nSuivre le colis : "+url));}
+ private void send(String to,String subject,String text){SimpleMailMessage m=new SimpleMailMessage();m.setFrom(from);m.setTo(to);m.setSubject(subject);m.setText(text);mail.send(m);}
+}

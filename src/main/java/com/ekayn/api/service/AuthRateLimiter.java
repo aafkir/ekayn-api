@@ -1,0 +1,3 @@
+package com.ekayn.api.service;
+import org.springframework.stereotype.Component; import java.time.*; import java.util.concurrent.*;
+@Component public class AuthRateLimiter { private final ConcurrentHashMap<String,Long> attempts=new ConcurrentHashMap<>(); public void check(String key,int limit){long now=System.currentTimeMillis();long window=60_000L;String k=key+":"+(now/window);long count=attempts.merge(k,1L,Long::sum);if(count>limit)throw new IllegalArgumentException("Trop de tentatives. Réessayez dans quelques instants.");attempts.keySet().removeIf(x->!x.endsWith(":"+(now/window))&&x.startsWith(key+":"));} }

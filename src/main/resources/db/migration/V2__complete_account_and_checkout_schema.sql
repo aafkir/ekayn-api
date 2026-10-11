@@ -1,0 +1,18 @@
+ALTER TABLE users ADD COLUMN IF NOT EXISTS verification_token_hash varchar(64);
+ALTER TABLE users ADD COLUMN IF NOT EXISTS verification_token_expires_at timestamp with time zone;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS reset_token_hash varchar(64);
+ALTER TABLE users ADD COLUMN IF NOT EXISTS reset_token_expires_at timestamp with time zone;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS session_version bigint NOT NULL DEFAULT 0;
+ALTER TABLE users DROP COLUMN IF EXISTS verification_token;
+ALTER TABLE users DROP COLUMN IF EXISTS reset_token;
+ALTER TABLE addresses ADD COLUMN IF NOT EXISTS default_address boolean NOT NULL DEFAULT false;
+CREATE UNIQUE INDEX IF NOT EXISTS one_default_address_per_user ON addresses(user_id) WHERE default_address;
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS subtotal numeric(12,2) NOT NULL DEFAULT 0;
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS shipping_cost numeric(12,2) NOT NULL DEFAULT 0;
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS stripe_checkout_url varchar(1000);
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS checkout_idempotency_key varchar(100);
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS payment_status varchar(30) NOT NULL DEFAULT 'UNPAID';
+ALTER TABLE order_item ADD COLUMN IF NOT EXISTS variant varchar(255);
+ALTER TABLE IF EXISTS payment_method DROP CONSTRAINT IF EXISTS payment_method_pkey;
+DROP TABLE IF EXISTS payment_method;
+CREATE TABLE IF NOT EXISTS stripe_events (event_id varchar(255) PRIMARY KEY, processed_at timestamp with time zone NOT NULL DEFAULT now());
